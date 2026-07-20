@@ -10,7 +10,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/good-evening', (req, res) => {
-  res.status(200).type('text/plain').send('Good evening');
+  res.status(200).type('text/plain').send('Good evening\n');
 });
 
 app.listen(port, hostname, () => {
