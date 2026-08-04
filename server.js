@@ -5,6 +5,29 @@ const port = 3000;
 
 const app = express();
 
+// The service publishes exactly two endpoints, `GET /` and `GET /good-evening`.
+// Express matches paths case-insensitively and tolerates a trailing slash by
+// default, so it would also answer `/Good-Evening` and `/good-evening/`. Both
+// relaxations are switched off so that only the exact documented paths resolve.
+// These settings are read when the application's router is first created, which
+// happens on the first route registration below, so they must be applied first.
+app.set('case sensitive routing', true);
+app.set('strict routing', true);
+
+// Both endpoints are GET-only. Express additionally serves HEAD from a GET route
+// implicitly and answers OPTIONS automatically with an `Allow` header, and
+// neither is part of the published contract. Passing control out of the route
+// table with `next('router')` hands the request to Express's default handler, so
+// every non-GET method receives the same 404 as an unmatched path.
+app.use((req, res, next) => {
+  if (req.method !== 'GET') {
+    next('router');
+    return;
+  }
+
+  next();
+});
+
 app.get('/', (req, res) => {
   res.status(200).type('text/plain').send('Hello, World!\n');
 });
